@@ -29,9 +29,9 @@ public:
 	virtual bool isSet(SourceTypes source = Source_Any) const { return (mSources & source) == source; }
 	virtual SourceTypes getSources() const { return mSources; }
 
-	virtual value_type get() const;
-	virtual void set(value_type value, SourceTypes source = Source_User);
-	virtual void inc(SourceTypes source = Source_User);
+	virtual value_type get() const { return mValue; }
+	virtual void set(value_type value, SourceTypes source = Source_User) { mValue = value; mSources |= source; }
+	virtual void inc(SourceTypes source = Source_User) { ++mValue; mSources |= source; }
 	virtual void setValue(const char* inp, SourceTypes source);
 
 	virtual value_type getDefault() const { return 0; }

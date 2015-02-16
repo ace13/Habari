@@ -13,15 +13,12 @@ enum SourceTypes
 	Source_Any = Source_Environment | Source_Commandline | Source_User
 };
 
-void ParseEnvironment();
-void ParseCommandline(int argc, char** argv);
+extern void ParseEnvironment();
+extern void ParseCommandline(int argc, char** argv);
 
-bool HasErrors();
-void PrintErrors();
-void PrintUsage(const char* extraOptions);
-
-bool RegisterParameter(IParameter*);
-IParameter* FindParameter(const char* name);
+extern bool HasErrors();
+extern void PrintErrors();
+extern void PrintUsage(const char* extraOptions);
 
 class IParameter
 {
@@ -39,7 +36,10 @@ public:
 	virtual bool isSet(SourceTypes source = Source_Any) const = 0;
 	virtual void setValue(const char* inp, SourceTypes) = 0;
 
-	virtual SourceTypes getSources() const = 0;
+	virtual int getSources() const = 0;
 };
+
+extern bool RegisterParameter(IParameter*);
+extern IParameter* FindParameter(const char* name);
 
 }

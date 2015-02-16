@@ -7,14 +7,12 @@ T Habari::Parse(const char* inp)
 {
 	if (!inp)
 	{
-		printf("No argument provided to %s.\n", getName());
+		printf("No argument provided.\n");
 		return T();
 	}
 
-	auto ver = getVerifier();
-
 	T ret;
-	std::ostringstream sstr(inp);
+	std::istringstream sstr(inp);
 	sstr >> ret;
 
 	return ret;

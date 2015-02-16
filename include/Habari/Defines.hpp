@@ -1,7 +1,15 @@
 #pragma once
 
-#define __HABARI_VA_NUM_ARGS(...) __HABARI_VA_NUM_ARGS_IMPL(__VA_ARGS__,5,4,3,2,1)
-#define __HABARI_VA_NUM_ARGS_IMPL(_1,_2,_3,_4,_5,N,...) N
+#if 1
+#define __HABARI_VA_NARG(...) __HABARI_VA_NARG_II((__HABARI_VA_NARG_PREFIX_ ## __VA_ARGS__ ## __HABARI_VA_NARG_POSTFIX,5,4,3,2,1,0))
+#define __HABARI_VA_NARG_II(__args) __HABARI_VA_NARG_I __args
+#define __HABARI_VA_NARG_PREFIX___HABARI_VA_NARG_POSTFIX ,,,,,0
+#define __HABARI_VA_NARG_I(_1,_2,_3,_4,_5,N,...) N
+#else
+#define __HABARI_VA_NARG(...) __HABARI_VA_NARG_(__VA_ARGS__,5,4,3,2,1)
+#define __HABARI_VA_NARG_(...) __HABARI_VA_NARG_N(__VA_ARGS__)
+#define __HABARI_VA_NARG_N(_1,_2,_3,_4,_5,N,...) N
+#endif
 
 #define HABARI_PARAMETERS_BEGIN namespace Habari { \
 namespace ParamDefs {
@@ -9,20 +17,20 @@ namespace ParamDefs {
 #define HABARI_PARAMETERS_END } \
 }
 
-#define HABARI_FLAG(FlagName, FlagDescription) struct FlagName##_t : public Habari::Flag { \
-const char* getName() const { return FlagName; } \
-const char* getDescription() const { return Description; }
+#define HABARI_FLAG(FlagName, FlagDescription) struct FlagName##_t : public ::Habari::Flag { \
+const char* getName() const { return #FlagName; } \
+const char* getDescription() const { return FlagDescription; }
 
-#define HABARI_MULTIFLAG(FlagName, FlagDescription) struct FlagName##_t : public Habari::MultiFlag { \
-const char* getName() const { return FlagName; } \
-const char* getDescription() const { return Description; }
+#define HABARI_MULTIFLAG(FlagName, FlagDescription) struct FlagName##_t : public ::Habari::MultiFlag { \
+const char* getName() const { return #FlagName; } \
+const char* getDescription() const { return FlagDescription; }
 
-#define HABARI_PARAMETER(FlagName, FlagType, FlagDescription) struct FlagName##_t : public Habari::Parameter<FlagType> { \
-const char* getName() const { return FlagName; } \
-const char* getDescription() const { return Description; } \
+#define HABARI_PARAMETER(FlagName, FlagType, FlagDescription) struct FlagName##_t : public ::Habari::Parameter<FlagType> { \
+const char* getName() const { return #FlagName; } \
+const char* getDescription() const { return FlagDescription; } \
 void setValue(const char* inp, SourceTypes source) { \
-	FlagType val = Habari::Parse<FlagType>(inp); \
-	auto ver = getVerifier() \
+	FlagType val = ::Habari::Parse<FlagType>(inp); \
+	auto ver = getVerifier(); \
 	if (ver && !ver(val)) \
 		return; \
 	set(val, source); \
@@ -30,29 +38,28 @@ void setValue(const char* inp, SourceTypes source) { \
 
 #define HABARI_END(FlagName) }; \
 } \
-namespace Params { Habari::ParamDefs::FlagName##_t FlagName; } \
+namespace Params { ::Habari::ParamDefs::FlagName##_t FlagName; } \
 namespace ParamDefs { \
-	bool FlagName##_reg = Habari::RegisterParameter(static_cast<Habari::IParameter*>(&Habari::Params::FlagName));
+	bool FlagName##_reg = ::Habari::RegisterParameter(static_cast<::Habari::IParameter*>(&::Habari::Params::FlagName));
 
-#define HABARI_ALIASES(Alias...) unsigned int numAliases() const { return __HABARI_VA_NUM_ARGS(Alias...); }\
+#define HABARI_ALIASES(...) unsigned int numAliases() const { return __HABARI_VA_NARG(__VA_ARGS__); }\
 const char* getAlias(unsigned int i = 0) const { \
-	const char* sAliases[] = { Alias... };\
-	if (i >= __HABARI_VA_NUM_ARGS(Alias...)) \
+	const char* sAliases[] = { __VA_ARGS__ };\
+	if (i >= numAliases()) \
 		return nullptr; \
 	return sAliases[i];\
 }
 #define HABARI_CATEGORY(Category) const char* getCategory() const { return #Category; }
-#define HABARI_SHORTHAND(Shorthand...) unsigned int numShorthand() const { return __HABARI_VA_NUM_ARGS(Shorthand...); }\
-const char getShorthand(unsigned int i = 0) const { \
-	const char sShorthands[] = { Shorthand... };\
-	if (i >= __HABARI_VA_NUM_ARGS(Shorthand...)) \
+#define HABARI_SHORTHAND(...) unsigned int numShorthands() const { return __HABARI_VA_NARG(__VA_ARGS__); }\
+char getShorthand(unsigned int i = 0) const { \
+	const char sShorthands[] = { __VA_ARGS__ };\
+	if (i >= numShorthands()) \
 		return '\0'; \
 	return sShorthands[i];\
 }
 #define HABARI_ENVIRONMENT(Environment) const char* getEnvironment() const { return #Environment; }
 
-#define HABARI_VARIFIER(Code) verifier_type getVerifier() const { return Code; }
+#define HABARI_VERIFIER_BEGIN verifier_type getVerifier() const { return
+#define HABARI_VERIFIER_END ; }
 #define HABARI_DEFAULT(DefaultValue) value_type getDefault() const { return DefaultValue; }
-
-#undef __HABARI_VA_NUM_ARGS
-#undef __HABARI_VA_NUM_ARGS_IMPL
+#define HABARI_VALUENAME(Name)

@@ -1,13 +1,15 @@
 project(Habari)
 
-cmake_minimum_required(3.1)
+cmake_minimum_required(VERSION 3.1)
 
 option(HABARI_BUILD_EXAMPLE OFF)
 
-set(CMAKE_CXX_STANDARD 11)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
+if (NOT MSVC)
+	set(CMAKE_CXX_STANDARD 11)
+	set(CMAKE_CXX_STANDARD_REQUIRED ON)
+endif()
 
-include_directories("${CMAKE_PROJECT_SOURCE_DIR}/include")
+include_directories("${CMAKE_CURRENT_SOURCE_DIR}/include")
 
 set(SOURCES
 	source/Habari/Habari.cpp
@@ -19,4 +21,5 @@ if (HABARI_BUILD_EXAMPLE)
 	set(EXAMPLE_SOURCES example/Example.cpp)
 
 	add_executable(Habari-example ${EXAMPLE_SOURCES})
+	target_link_libraries(Habari-example Habari)
 endif()

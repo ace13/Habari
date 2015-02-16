@@ -42,4 +42,6 @@ private:
 	std::function<bool()const> mVerifier;
 };
 
+Flag& GetFlag(const std::string& name);
+
 }

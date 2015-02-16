@@ -1,5 +1,8 @@
 #pragma once
 
+#include <istream>
+#include <string>
+
 namespace Habari
 {
 	
@@ -17,6 +20,8 @@ void ParseConfig(const std::string& file);
 void ParseConfig(std::istream& stream);
 void ParseEnvironment();
 void ParseCommandline(int argc, char** argv);
+
+bool HasErrors();
 
 template<typename T>
 void RegisterParameter(T&);

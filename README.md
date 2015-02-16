@@ -28,7 +28,7 @@ HABARI_MULTIFLAG(Verbose, "Enable verbose output")
 	HABARI_SHORTHAND('v')
 	HABARI_ENVIRONMENT(VERBOSE)
 	// Only allow stacking up to -vvvv
-	HABARI_VERIFIER([this]() -> bool { return getValue() < 4; })
+	HABARI_VERIFIER([](unsigned int newVal) -> bool { return newVal < 5; })
 	// 'Warning' level by default
 	HABARI_DEFAULT(2)
 	// Defaults to the parameter name, uppercased
@@ -105,7 +105,7 @@ int main(int argc, char** argv)
 
 	// Parameter lookup
 	if (Habari::GetMultiflag("Verbose").get() >= Info)
-		std::cout << "FPS will be limited to " << Habari::GetParam<uint32_t>("FPS").get() << " frames per second." << std::endl;
+		std::cout << "FPS will be limited to " << Habari::GetParameter<uint32_t>("FPS").get() << " frames per second." << std::endl;
 
 	return 0;
 }
@@ -128,20 +128,17 @@ $ ./a.out --size=1024
 Error, invalid value '1024' specified for parameter Size
 Use --help for usage.
 $ ./a.out -h
-./a.out [options...]
+Usage: a.out [options]
 
-  -h, --help
-		Prints the usage and exits
-  -V, --version
-		Prints the version of the compiled software and exits.
+Options:
+  -h, --Help    Prints the usage and exits
+  -V, --version Prints the version of the compiled software and exits.
   -v, --verbose[=LEVEL]
-		Enable verbose output
-  --fullscreen
-		Run the program fullscreened
+                Enable verbose output
+  --fullscreen  Run the program fullscreened
   -s SIZE, --size=SIZE
-		Specify the size of the window
-  --fps=FPS
-		FPS limit, specify 0 for no limit
+                Specify the size of the window
+  --fps=FPS     FPS limit, specify 0 for no limit
 
 Also, this example is just a very basic mockup of the final system.
 

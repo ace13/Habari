@@ -31,6 +31,9 @@ protected:
 private:
 	unsigned int mValue;
 	SourceTypes mSource;
+	std::function<bool(unsigned int)const> mValidator;
 };
+
+MultiFlag& GetMultiflag(const std::string& name);
 
 }

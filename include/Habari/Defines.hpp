@@ -20,7 +20,13 @@ const char* getDescription() const { return Description; }
 #define HABARI_PARAMETER(FlagName, FlagType, FlagDescription) struct FlagName##_t : public Habari::Parameter<FlagType> { \
 const char* getName() const { return FlagName; } \
 const char* getDescription() const { return Description; } \
-void setValue(const char* inp, SourceTypes source) { set(Habari::Parse<FlagType>(inp), source); } \
+void setValue(const char* inp, SourceTypes source) { \
+	FlagType val = Habari::Parse<FlagType>(inp); \
+	auto ver = getVerifier() \
+	if (ver && !ver(val)) \
+		return; \
+	set(val, source); \
+} \
 
 #define HABARI_END(FlagName) }; \
 } \

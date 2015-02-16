@@ -30,8 +30,8 @@ public:
 	virtual SourceTypes getSources() const { return mSources; }
 
 	virtual value_type get() const;
-	virtual void set(value_type value, SourceTypes source);
-	virtual void inc(SourceTypes source);
+	virtual void set(value_type value, SourceTypes source = Source_User);
+	virtual void inc(SourceTypes source = Source_User);
 	virtual void setValue(const char* inp, SourceTypes source);
 
 	virtual value_type getDefault() const { return 0; }

@@ -28,7 +28,7 @@ HABARI_MULTIFLAG(Verbose, "Enable verbose output")
 	HABARI_SHORTHAND('v')
 	HABARI_ENVIRONMENT(VERBOSE)
 	// Only allow stacking up to -vvvv
-	HABARI_VERIFIER([this]() -> bool { return get() < 4; })
+	HABARI_VERIFIER([](unsigned int newVal) -> bool { return newVal < 5; })
 	// 'Warning' level by default
 	HABARI_DEFAULT(2)
 	// Defaults to the parameter name, uppercased

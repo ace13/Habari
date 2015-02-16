@@ -18,6 +18,7 @@ void ParseCommandline(int argc, char** argv);
 
 bool HasErrors();
 void PrintErrors();
+void PrintUsage();
 
 bool RegisterParameter(IParameter*);
 IParameter* FindParameter(const char* name);

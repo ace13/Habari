@@ -7,9 +7,14 @@
 #include <vector>
 #include <cstdlib>
 
+#ifndef WIN32
+#include <libgen.h>
+#endif
+
 namespace 
 {
 	std::vector<IParameter*> Parameters;
+	std::string ProgramName;
 
 	void ParseEnvVar(const char* input, IParameter* p)
 	{
@@ -17,9 +22,9 @@ namespace
 		if (sources & (Source_User | Source_Commandline) > 0)
 			return;
 
-		if (Habari::Flag* flag = dynamic_cast<Habari::Flag*>(p))
+		if ((Habari::Flag* flag = dynamic_cast<Habari::Flag*>(p)))
 			flag->set(Habari::Source_Environment);
-		else if (Habari::MultiFlag* mf = dynamic_cast<Habari::MultiFlag*>(p))
+		else if ((Habari::MultiFlag* mf = dynamic_cast<Habari::MultiFlag*>(p)))
 		{
 			unsigned int val;
 			int ret = sscanf(input, "%u", &val);
@@ -53,7 +58,87 @@ void Habari::ParseEnvironment()
 }
 void Habari::ParseCommandline(int argc, char** argv)
 {
+	ProgramName = argv[0];
+#ifdef WIN32
+	int pos = ProgramName.find_last_of('\\');
+	if (pos != std::string::npos)
+	ProgramName = ProgramName.erase(0, pos + 1);
+#else
+	ProgramName = basename(ProgramName.data());
+#endif
 
+	IParameter* waiting = nullptr;
+	for (int i = 1; i < argc; ++i)
+	{
+		char* arg = argv[i];
+
+		if (*arg == '-' && !waiting)
+		{
+			if (arg[1] == '-')
+			{
+				char* nameS = arg + 2, nameE = nameS;
+				while (*++nameE != '=' && *nameE != '\0');
+
+				for (auto& p : Parameters)
+				{
+					if (strncmp(p->getName(), nameS, nameE-nameS) == 0)
+					{
+						waiting = p;
+						break;
+					}
+					else if ((unsigned int as = p->numAliases()) > 0)
+					{
+						for (unsigned int j = 0; j < as; ++j)
+						{
+							if (strncmp(p->getAlias(j), nameS, nameE-nameS) == 0)
+							{
+								waiting = p;
+								break;
+							}
+						}
+					}
+
+					if (waiting)
+						break;
+				}
+
+				if (!waiting)
+					printf("Unknown parameter '%s' given.\n", nameS);
+				else if ((Habari::Flag* flag = dynamic_cast<Habari::Flag*>(waiting)))
+				{
+					flag->set(Habari::Source_Commandline);
+					waiting = nullptr;
+				}
+			}
+			else
+			{
+				int sh = 1;
+				do
+				{
+					char shorthand = arg[sh];
+
+					for (auto& p : Parameters)
+					{
+						unsigned int shs = p->numShorthands();
+						for (unsigned int j = 0; j < shs; ++j)
+							if (p->getShorthand(j) == shorthand)
+							{
+								if (waiting)
+									waiting->setValue(nullptr, Source_Commandline);
+
+								waiting = p;
+								break;
+							}
+					}
+				} while (arg[++sh] != '\0');
+			}
+		}
+		else if (waiting)
+		{
+			waiting->setValue(arg, Source_Commandline);
+			waiting = nullptr;
+		}
+	}
 }
 
 bool Habari::HasErrors()
@@ -61,6 +146,10 @@ bool Habari::HasErrors()
 	return false;
 }
 void Habari::PrintErrors()
+{
+
+}
+void Habari::PrintUsage()
 {
 
 }
@@ -95,17 +184,34 @@ Habari::MultiFlag& Habari::GetMultiflag()
 
 void Habari::Flag::setValue(const char*, Habari::SourceTypes source)
 {
+	auto ver = getVerifier();
+	if (ver && !ver())
+		return;
+
 	set(source);
 }
 
 void Habari::MultiFlag::setValue(const char* inp, Habari::SourceTypes source)
 {
-	unsigned int val;
-	int ret = sscanf(input, "%u", &val);
-	if (ret == 1)
-		set(val, source);
-	else if (ret == EOF)
+	auto ver = getVerifier();
+
+	if (inp)
+	{
+		unsigned int val;
+		int ret = sscanf(input, "%u", &val);
+		if (ret == 1)
+		{
+			if (!ver || ver(val))
+				set(val, source);
+		}
+		else if (ret == EOF)
+		{
+			if (!ver || ver(mValue + 1))
+				inc(source);
+		}
+		else
+			printf("Unknown value '%s' provided to %s\n", input, p->getName());
+	}
+	else if (!ver || ver(mValue + 1))
 		inc(source);
-	else
-		printf("Unknown value '%s' provided to %s\n", input, p->getName());
 }

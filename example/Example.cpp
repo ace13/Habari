@@ -4,8 +4,6 @@
 #include <Habari/Parameter.hpp>
 #include <iostream>
 
-static_assert(__HABARI_VA_NARG(3, 2, 1) == 3, "Nope");
-
 HABARI_PARAMETERS_BEGIN
 
 HABARI_FLAG(Help, "Prints the usage and exits")
@@ -67,6 +65,9 @@ int main(int argc, char** argv)
 {
 	Habari::ParseEnvironment();
 	Habari::ParseCommandline(argc, argv);
+
+    if (Habari::GetFlag("Quit").get())
+        return 0;
 
 	if (Habari::HasErrors())
 	{

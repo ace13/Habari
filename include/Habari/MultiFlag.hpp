@@ -31,7 +31,7 @@ public:
 	virtual void inc(SourceTypes source = Source_User) { ++mValue; mSources |= source; }
 	virtual void setValue(const char* inp, SourceTypes source);
 
-	virtual value_type getDefault() const { return 0; }
+    virtual value_type getDefault() const { return 0; }
     virtual verifier_type getVerifier() const { return verifier_type(); }
 
 private:

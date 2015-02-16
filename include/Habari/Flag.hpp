@@ -29,7 +29,7 @@ public:
 	virtual void set(value_type value, SourceTypes source = Source_User) { mValue = value; mSources |= source; }
 	virtual void setValue(const char* inp, SourceTypes source);
 
-	virtual value_type getDefault() const { return false; }
+    virtual value_type getDefault() const { return false; }
     virtual verifier_type getVerifier() const { return verifier_type(); }
 
 private:

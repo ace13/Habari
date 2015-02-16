@@ -106,20 +106,20 @@ void Habari::ParseCommandline(int argc, char** argv)
 			{
 				char* nameS = arg + 2, *nameE = nameS;
 				while (*++nameE != '=' && *nameE != '\0');
+                std::string name = lowercase(std::string(nameS, nameE - nameS));
 
                 for (auto& p : HSingleton().Parameters)
-				{
-					if (strncmp(p->getName(), nameS, nameE-nameS) == 0)
+                { 
+					if (lowercase(p->getName()) == name)
 					{
 						waiting = p;
-						break;
 					}
 					else if (p->numAliases() > 0)
 					{
                         unsigned int as = p->numAliases();
 						for (unsigned int j = 0; j < as; ++j)
 						{
-							if (strncmp(p->getAlias(j), nameS, nameE-nameS) == 0)
+                            if (lowercase(p->getAlias(j)) == name)
 							{
 								waiting = p;
 								break;
@@ -160,6 +160,12 @@ void Habari::ParseCommandline(int argc, char** argv)
 							}
 					}
 				} while (arg[++sh] != '\0');
+
+                if (waiting)
+                {
+                    waiting->setValue(nullptr, Source_Commandline);
+                    waiting = nullptr;
+                }
 			}
 		}
 		else if (waiting)
@@ -256,7 +262,7 @@ Habari::IParameter* Habari::FindParameter(const char* name)
 {
     for (auto& i : HSingleton().Parameters)
 	{
-		if (i->getName() == name)
+		if (lowercase(i->getName()) == lowercase(name))
 			return i;
 	}
 

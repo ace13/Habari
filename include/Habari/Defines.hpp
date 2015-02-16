@@ -18,14 +18,17 @@ namespace ParamDefs {
 }
 
 #define HABARI_FLAG(FlagName, FlagDescription) struct FlagName##_t : public ::Habari::Flag { \
+FlagName##_t() : ::Habari::Flag() { set(getDefault(), Source_Default); } \
 const char* getName() const { return #FlagName; } \
 const char* getDescription() const { return FlagDescription; }
 
 #define HABARI_MULTIFLAG(FlagName, FlagDescription) struct FlagName##_t : public ::Habari::MultiFlag { \
+FlagName##_t() : ::Habari::MultiFlag() { set(getDefault(), Source_Default); } \
 const char* getName() const { return #FlagName; } \
 const char* getDescription() const { return FlagDescription; }
 
 #define HABARI_PARAMETER(FlagName, FlagType, FlagDescription) struct FlagName##_t : public ::Habari::Parameter<FlagType> { \
+FlagName##_t() : ::Habari::Parameter<FlagType>() { set(getDefault(), Source_Default); } \
 const char* getName() const { return #FlagName; } \
 const char* getDescription() const { return FlagDescription; } \
 void setValue(const char* inp, SourceTypes source) { \

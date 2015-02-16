@@ -28,7 +28,7 @@ HABARI_MULTIFLAG(Verbose, "Enable verbose output")
 	HABARI_SHORTHAND('v')
 	HABARI_ENVIRONMENT(VERBOSE)
 	// Only allow stacking up to -vvvv
-	HABARI_VERIFIER([](unsigned int newVal) -> bool { return newVal < 5; })
+	HABARI_VERIFIER([this]() -> bool { return get() < 4; })
 	// 'Warning' level by default
 	HABARI_DEFAULT(2)
 	// Defaults to the parameter name, uppercased
@@ -37,32 +37,25 @@ HABARI_END(Verbose)
  
 HABARI_FLAG(Fullscreen, "Run the program fullscreened")
 	HABARI_SHORTHAND('f')
-	HABARI_CONFIG(Fullscreen)
+	HABARI_CATEGORY(Window)
 HABARI_END(Fullscreen)
  
 HABARI_PARAMETER(Size, std::string, "Specify the size of the window")
+	Habari_ALIASES("Geometry", "Geom")
 	HABARI_CATEGORY(Window)
-	HABARI_SHORTHAND('s')
+	HABARI_SHORTHAND('s', 'g')
 	// Verify that it's a valid resolution
 	HABARI_VERIFIER([](const std::string& input) -> bool { int x, y; return (sscanf(input.c_str(), "%dx%d", &x, &y) == 2 && x > 0 && y > 0); })
-	// Store as 'Size' in config files
-	HABARI_CONFIG(Size)
 	HABARI_DEFAULT("1024x768")
 HABARI_END(Size)
  
 HABARI_PARAMETER(FPS, uint32_t, "FPS limit, specify 0 for no limit")
 	HABARI_CATEGORY(Window)
-	HABARI_CONFIG(FPSLimit)
 	HABARI_DEFAULT(60)
 HABARI_END(FPS)
 
-HABARI_PARAMETER(Name, std::string, "Player name")
-	HABARI_CATEGORY(Player)
-	HABARI_CONFIG(Name)
-	HABARI_DEFAULT("Mr.Nobody")
-	// Only store/read from config
-	HABARI_CONFIGONLY
-HABARI_END(Name)
+HABARI_FLAG(Quit, "Quits the program immediately")
+HABARI_END(Quit)
 
 HABARI_END_PARAMETERS
 
@@ -76,7 +69,6 @@ enum Verbosity {
 
 int main(int argc, char** argv)
 {
-	Habari::ParseConfig("config.ini");
 	Habari::ParseEnvironment();
 	Habari::ParseCommandline(argc, argv);
 
@@ -130,13 +122,16 @@ Use --help for usage.
 $ ./a.out -h
 Usage: a.out [options]
 
-Options:
-  -h, --Help    Prints the usage and exits
+General Options:
+  -h, --help    Prints the usage and exits
   -V, --version Prints the version of the compiled software and exits.
   -v, --verbose[=LEVEL]
                 Enable verbose output
+  --quit        Quits the program immediately
+
+Window Options:
   --fullscreen  Run the program fullscreened
-  -s SIZE, --size=SIZE
+  -g SIZE, -s SIZE, --geom=SIZE, --geometry=SIZE, --size=SIZE
                 Specify the size of the window
   --fps=FPS     FPS limit, specify 0 for no limit
 

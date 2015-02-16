@@ -32,6 +32,7 @@ public:
 	virtual value_type get() const;
 	virtual void set(value_type value, SourceTypes source);
 	virtual void inc(SourceTypes source);
+	virtual void setValue(const char* inp, SourceTypes source);
 
 	virtual value_type getDefault() const { return 0; }
 	virtual verifier_t getVerifier() const { return verifier_t(); }
@@ -41,6 +42,6 @@ private:
 	SourceTypes mSources;
 };
 
-MultiFlag& GetMultiflag(const std::string& name);
+MultiFlag& GetMultiflag(const char* name);
 
 }

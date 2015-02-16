@@ -31,6 +31,7 @@ public:
 
 	virtual value_type get() const;
 	virtual void set(value_type value, SourceTypes source);
+	virtual void setValue(const char* inp, SourceTypes source);
 
 	virtual value_type getDefault() const { return false; }
 	virtual verifier_t getVerifier() const { return verifier_t(); }
@@ -40,6 +41,6 @@ private:
 	SourceTypes mSources;
 };
 
-Flag& GetFlag(const std::string& name);
+Flag& GetFlag(const char* name);
 
 }

@@ -29,6 +29,7 @@ public:
 
 	virtual value_type get() const;
 	virtual void set(value_type value, SourceTypes source);
+	virtual void setValue(const char* inp, SourceTypes source) = 0;
 
 	virtual value_type getDefault() const { return T(); }
 	virtual verifier_t getVerifier() const { return verifier_t(); }
@@ -39,6 +40,11 @@ private:
 };
 
 template<typename T>
-Parameter<T>& GetParameter(const std::string& name);
+T Parse(const char* inp);
+
+template<typename T>
+Parameter<T>& GetParameter(const char* name);
 	
 }
+
+#include "Parameter.inl"

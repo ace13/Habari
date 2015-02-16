@@ -20,12 +20,13 @@ const char* getDescription() const { return Description; }
 #define HABARI_PARAMETER(FlagName, FlagType, FlagDescription) struct FlagName##_t : public Habari::Parameter<FlagType> { \
 const char* getName() const { return FlagName; } \
 const char* getDescription() const { return Description; } \
+void setValue(const char* inp, SourceTypes source) { set(Habari::Parse<FlagType>(inp), source); } \
 
 #define HABARI_END(FlagName) }; \
 } \
 namespace Params { Habari::ParamDefs::FlagName##_t FlagName; } \
 namespace ParamDefs { \
-	bool FlagName##_reg = Habari::RegisterParameter<FlagName##_t>(Habari::Params::FlagName);
+	bool FlagName##_reg = Habari::RegisterParameter(static_cast<Habari::IParameter*>(&Habari::Params::FlagName));
 
 #define HABARI_ALIASES(Alias...) unsigned int numAliases() const { return __HABARI_VA_NUM_ARGS(Alias...); }\
 const char* getAlias(unsigned int i = 0) const { \

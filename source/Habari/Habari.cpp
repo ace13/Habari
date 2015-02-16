@@ -17,16 +17,16 @@
 
 namespace 
 {
-    struct HabariSingleton
-    {
-        std::vector<Habari::IParameter*> Parameters;
-        std::string ProgramName;
-    } *Singleton;
+	struct HabariSingleton
+	{
+		std::vector<Habari::IParameter*> Parameters;
+		std::string ProgramName;
+	} *Singleton;
 
-    void ParseEnvVar(const char* input, Habari::IParameter* p)
+	void ParseEnvVar(const char* input, Habari::IParameter* p)
 	{
 		auto sources = p->getSources();
-        if ((sources & (Habari::Source_User | Habari::Source_Commandline)) > 0)
+		if ((sources & (Habari::Source_User | Habari::Source_Commandline)) > 0)
 			return;
 
 		if (Habari::Flag* flag = dynamic_cast<Habari::Flag*>(p))
@@ -46,30 +46,30 @@ namespace
 		}
 	}
 
-    std::string lowercase(const std::string& str)
-    {
-        std::string out = str;
-        std::transform(out.begin(), out.end(), out.begin(), ::tolower);
-        return out;
-    }
-    std::string uppercase(const std::string& str)
-    {
-        std::string out = str;
-        std::transform(out.begin(), out.end(), out.begin(), ::toupper);
-        return out;
-    }
+	std::string lowercase(const std::string& str)
+	{
+		std::string out = str;
+		std::transform(out.begin(), out.end(), out.begin(), ::tolower);
+		return out;
+	}
+	std::string uppercase(const std::string& str)
+	{
+		std::string out = str;
+		std::transform(out.begin(), out.end(), out.begin(), ::toupper);
+		return out;
+	}
 
-    HabariSingleton& HSingleton()
-    {
-        if (!Singleton)
-            Singleton = new HabariSingleton();
-        return *Singleton;
-    }
+	HabariSingleton& HSingleton()
+	{
+		if (!Singleton)
+			Singleton = new HabariSingleton();
+		return *Singleton;
+	}
 }
 
 void Habari::ParseEnvironment()
 {
-    for (auto& i : HSingleton().Parameters)
+	for (auto& i : HSingleton().Parameters)
 	{
 		const char* envVar = i->getEnvironment();
 
@@ -86,16 +86,16 @@ void Habari::ParseEnvironment()
 
 void Habari::ParseCommandline(int argc, char** argv)
 {
-    HSingleton().ProgramName = argv[0];
+	HSingleton().ProgramName = argv[0];
 #ifdef WIN32
-    int pos = HSingleton().ProgramName.find_last_of('\\');
+	int pos = HSingleton().ProgramName.find_last_of('\\');
 	if (pos != std::string::npos)
-    HSingleton().ProgramName = HSingleton().ProgramName.erase(0, pos + 1);
+	HSingleton().ProgramName = HSingleton().ProgramName.erase(0, pos + 1);
 #else
-    HSingleton().ProgramName = basename(HSingleton().ProgramName.data());
+	HSingleton().ProgramName = basename(HSingleton().ProgramName.data());
 #endif
 
-    Habari::IParameter* waiting = nullptr;
+	Habari::IParameter* waiting = nullptr;
 	for (int i = 1; i < argc; ++i)
 	{
 		char* arg = argv[i];
@@ -106,20 +106,20 @@ void Habari::ParseCommandline(int argc, char** argv)
 			{
 				char* nameS = arg + 2, *nameE = nameS;
 				while (*++nameE != '=' && *nameE != '\0');
-                std::string name = lowercase(std::string(nameS, nameE - nameS));
+				std::string name = lowercase(std::string(nameS, nameE - nameS));
 
-                for (auto& p : HSingleton().Parameters)
-                { 
+				for (auto& p : HSingleton().Parameters)
+				{ 
 					if (lowercase(p->getName()) == name)
 					{
 						waiting = p;
 					}
 					else if (p->numAliases() > 0)
 					{
-                        unsigned int as = p->numAliases();
+						unsigned int as = p->numAliases();
 						for (unsigned int j = 0; j < as; ++j)
 						{
-                            if (lowercase(p->getAlias(j)) == name)
+							if (lowercase(p->getAlias(j)) == name)
 							{
 								waiting = p;
 								break;
@@ -146,7 +146,7 @@ void Habari::ParseCommandline(int argc, char** argv)
 				{
 					char shorthand = arg[sh];
 
-                    for (auto& p : HSingleton().Parameters)
+					for (auto& p : HSingleton().Parameters)
 					{
 						unsigned int shs = p->numShorthands();
 						for (unsigned int j = 0; j < shs; ++j)
@@ -161,11 +161,11 @@ void Habari::ParseCommandline(int argc, char** argv)
 					}
 				} while (arg[++sh] != '\0');
 
-                if (waiting)
-                {
-                    waiting->setValue(nullptr, Source_Commandline);
-                    waiting = nullptr;
-                }
+				if (waiting)
+				{
+					waiting->setValue(nullptr, Source_Commandline);
+					waiting = nullptr;
+				}
 			}
 		}
 		else if (waiting)
@@ -186,41 +186,41 @@ void Habari::PrintErrors()
 }
 void Habari::PrintUsage(const char* extraOptions)
 {
-    static const unsigned int ARGWIDTH = 16;
+	static const unsigned int ARGWIDTH = 16;
 
-    std::cout << "Usage: " << HSingleton().ProgramName << " [options] " << (extraOptions ? std::string(extraOptions) : "") << std::endl
+	std::cout << "Usage: " << HSingleton().ProgramName << " [options] " << (extraOptions ? std::string(extraOptions) : "") << std::endl
 		<< std::endl
 		<< "General Options:" << std::endl;
 
-    auto writeOpts = [](IParameter* i, std::ostream& sstr) {
-        bool first = true;
-        sstr << "  ";
-        for (unsigned int j = 0; j < i->numShorthands(); ++j)
-        {
-            sstr << (!first ? ", " : "") << "-" << i->getShorthand(j);
+	auto writeOpts = [](IParameter* i, std::ostream& sstr) {
+		bool first = true;
+		sstr << "  ";
+		for (unsigned int j = 0; j < i->numShorthands(); ++j)
+		{
+			sstr << (!first ? ", " : "") << "-" << i->getShorthand(j);
 
-            if (first)
-                first = false;
-        }
-        sstr << (!first ? ", " : "") << "--" << lowercase(i->getName());
-        for (unsigned int j = 0; j < i->numAliases(); ++j)
-        {
-            sstr << ", --" << lowercase(i->getAlias(j));
-        }
+			if (first)
+				first = false;
+		}
+		sstr << (!first ? ", " : "") << "--" << lowercase(i->getName());
+		for (unsigned int j = 0; j < i->numAliases(); ++j)
+		{
+			sstr << ", --" << lowercase(i->getAlias(j));
+		}
 
-        if (sstr.tellp() > ARGWIDTH)
-        {
-            sstr << std::endl;
-            for (size_t i = 0; i < ARGWIDTH; ++i)
-                sstr << " ";
-        }
-        else
-            for (size_t i = sstr.tellp(); i < ARGWIDTH; ++i)
-                sstr << " ";
-    };
+		if (sstr.tellp() > ARGWIDTH)
+		{
+			sstr << std::endl;
+			for (size_t i = 0; i < ARGWIDTH; ++i)
+				sstr << " ";
+		}
+		else
+			for (size_t i = sstr.tellp(); i < ARGWIDTH; ++i)
+				sstr << " ";
+	};
 
 	std::set<std::string> categories;
-    for (auto& i : HSingleton().Parameters)
+	for (auto& i : HSingleton().Parameters)
 	{
 		if (i->getCategory())
 		{
@@ -228,39 +228,39 @@ void Habari::PrintUsage(const char* extraOptions)
 			continue;
 		}
 
-        std::stringstream sstr;
-        writeOpts(i, sstr);
+		std::stringstream sstr;
+		writeOpts(i, sstr);
 		std::cout << sstr.str() << " " << std::string(i->getDescription()) << std::endl;
 	}
-    std::cout << std::endl;
+	std::cout << std::endl;
 
-    for (auto& cat : categories)
-    {
-        std::cout << cat << " Options:" << std::endl;
-        for (auto& i : HSingleton().Parameters)
-        {
-            if (!i->getCategory() || i->getCategory() != cat)
-                continue;
+	for (auto& cat : categories)
+	{
+		std::cout << cat << " Options:" << std::endl;
+		for (auto& i : HSingleton().Parameters)
+		{
+			if (!i->getCategory() || i->getCategory() != cat)
+				continue;
 
-            std::stringstream sstr;
-            writeOpts(i, sstr);
-            std::cout << sstr.str() << " " << std::string(i->getDescription()) << std::endl;
-        }
-    }
-    if (!categories.empty())
-        std::cout << std::endl;
+			std::stringstream sstr;
+			writeOpts(i, sstr);
+			std::cout << sstr.str() << " " << std::string(i->getDescription()) << std::endl;
+		}
+	}
+	if (!categories.empty())
+		std::cout << std::endl;
 }
 
 bool Habari::RegisterParameter(Habari::IParameter* param)
 {
-    HSingleton().Parameters.push_back(param);
+	HSingleton().Parameters.push_back(param);
 
 	return true;
 }
 
 Habari::IParameter* Habari::FindParameter(const char* name)
 {
-    for (auto& i : HSingleton().Parameters)
+	for (auto& i : HSingleton().Parameters)
 	{
 		if (lowercase(i->getName()) == lowercase(name))
 			return i;
@@ -295,7 +295,7 @@ void Habari::MultiFlag::setValue(const char* inp, Habari::SourceTypes source)
 	if (inp)
 	{
 		unsigned int val;
-        int ret = sscanf(inp, "%u", &val);
+		int ret = sscanf(inp, "%u", &val);
 		if (ret == 1)
 		{
 			if (!ver || ver(val))

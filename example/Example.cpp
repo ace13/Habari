@@ -7,20 +7,20 @@
 HABARI_PARAMETERS_BEGIN
 
 HABARI_FLAG(Help, "Prints the usage and exits")
-    HABARI_SHORTHAND('h')
+	HABARI_SHORTHAND('h')
 HABARI_END(Help)
 
 HABARI_FLAG(Version, "Prints the version of the compiled software and exits.")
-    HABARI_SHORTHAND('V')
+	HABARI_SHORTHAND('V')
 HABARI_END(Version)
 
 HABARI_MULTIFLAG(Verbose, "Enable verbose output")
-    HABARI_SHORTHAND('v')
-    HABARI_ENVIRONMENT(VERBOSE)
-    // Only allow stacking up to -vvvv
-    HABARI_VERIFIER_BEGIN
-        [](unsigned int newVal) -> bool { return newVal < 5; }
-    HABARI_VERIFIER_END
+	HABARI_SHORTHAND('v')
+	HABARI_ENVIRONMENT(VERBOSE)
+	// Only allow stacking up to -vvvv
+	HABARI_VERIFIER_BEGIN
+		[](unsigned int newVal) -> bool { return newVal < 5; }
+	HABARI_VERIFIER_END
 	// 'Warning' level by default
 	HABARI_DEFAULT(2)
 	// Defaults to the parameter name, uppercased
@@ -36,14 +36,14 @@ HABARI_PARAMETER(Size, std::string, "Specify the size (geometry) of the window")
 	HABARI_CATEGORY(Window)
 	HABARI_SHORTHAND('s', 'g')
 	// Verify that it's a valid resolution
-    HABARI_VERIFIER_BEGIN
-        [](const std::string& input) -> bool { int x, y; return (sscanf(input.c_str(), "%dx%d", &x, &y) == 2 && x > 0 && y > 0); }
-    HABARI_VERIFIER_END
+	HABARI_VERIFIER_BEGIN
+		[](const std::string& input) -> bool { int x, y; return (sscanf(input.c_str(), "%dx%d", &x, &y) == 2 && x > 0 && y > 0); }
+	HABARI_VERIFIER_END
 	HABARI_DEFAULT("1024x768")
 HABARI_END(Size)
  
 HABARI_PARAMETER(FPS, unsigned int, "FPS limit, specify 0 for no limit")
-    HABARI_ALIASES("Limit")
+	HABARI_ALIASES("Limit")
 	HABARI_CATEGORY(Window)
 	HABARI_DEFAULT(60)
 HABARI_END(FPS)
@@ -66,8 +66,8 @@ int main(int argc, char** argv)
 	Habari::ParseEnvironment();
 	Habari::ParseCommandline(argc, argv);
 
-    if (Habari::GetFlag("Quit").get())
-        return 0;
+	if (Habari::GetFlag("Quit").get())
+		return 0;
 
 	if (Habari::HasErrors())
 	{

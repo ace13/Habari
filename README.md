@@ -126,13 +126,13 @@ General Options:
   -h, --help    Prints the usage and exits
   -V, --version Prints the version of the compiled software and exits.
   -v, --verbose[=LEVEL]
-                Enable verbose output
+				Enable verbose output
   --quit        Quits the program immediately
 
 Window Options:
   --fullscreen  Run the program fullscreened
   -g SIZE, -s SIZE, --geom=SIZE, --geometry=SIZE, --size=SIZE
-                Specify the size of the window
+				Specify the size of the window
   --fps=FPS     FPS limit, specify 0 for no limit
 
 Also, this example is just a very basic mockup of the final system.

@@ -149,9 +149,40 @@ void Habari::PrintErrors()
 {
 
 }
-void Habari::PrintUsage()
+void Habari::PrintUsage(const char* extraOptions)
 {
+	std::cout << "Usage: " << ProgramName << " [options] " << (extraOptions ? std::string(extraOptions) : "") << std::endl
+		<< std::endl
+		<< "General Options:" << std::endl;
+	std::set<std::string> categories;
+	for (auto& i: Parameters)
+	{
+		if (i->getCategory())
+		{
+			categories.insert(i->getCategory());
+			continue;
+		}
 
+		bool first = true;
+		std::strinstream sstr;
+		sstr << "  ";
+		for (unsigned int j = 0; j < i->numShorthands(); ++j)
+		{
+			sstr << (!first ? ", " : "") << "-" << i->getShorthand(j);
+
+			if (first)
+				first = false;
+		}
+		sstr << (!first ? ", " : "") << "--" << std::string(i->getName());
+		for (unsigned int j = 0; j < i->numAliases(); ++j)
+		{
+			sstr << ", --" << std::string(i->getAlias(j));
+		}
+
+		if (sstr.tellp() > 16)
+			sstr << std::endl << sstr << "                ";
+		std::cout << sstr.str() << " " << std::string(i->getDescription()) << std::endl;
+	}
 }
 
 bool Habari::RegisterParameter(Habari::IParameter* param)

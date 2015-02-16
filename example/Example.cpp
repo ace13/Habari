@@ -1,13 +1,3 @@
-Habari
-======
-
-A C++11 commandline/config/environment parser for program options.
-Licensed under the MIT license, more information in the LICENSE file.
-
-Mockup
-======
-
-```c++
 #include <Habari/Defines.hpp>
 #include <Habari/Flag.hpp>
 #include <Habari/MultiFlag.hpp>
@@ -101,41 +91,3 @@ int main(int argc, char** argv)
 
 	return 0;
 }
-```
-
-```
-$ ./a.out
-Launching application in 1024x768 windowed mode.
-$ ./a.out -fs 640x480 --fps=10
-Launching application in 640x480 fullscreen mode.
-$ ./a.out -fv --size 640x480 # Long options don't need to use '='
-Launching application in 640x480 fullscreen mode.
-FPS will be limited to 60 frames per second.
-$ VERBOSE=4 ./a.out --fullscreen --verbose=0 # Commandline has higher priority than environment variables
-Launching application in 1024x768 fullscreen mode.
-$ ./a.out -fs
-Error, missing value for parameter Size ('s')
-Use --help for usage.
-$ ./a.out --size=1024
-Error, invalid value '1024' specified for parameter Size
-Use --help for usage.
-$ ./a.out -h
-Usage: a.out [options] <input file>
-
-General Options:
-  -h, --help    Prints the usage and exits
-  -V, --version Prints the version of the compiled software and exits.
-  -v, --verbose[=LEVEL]
-                Enable verbose output
-  --quit        Quits the program immediately
-
-Window Options:
-  --fullscreen  Run the program fullscreened
-  -g SIZE, -s SIZE, --geom=SIZE, --geometry=SIZE, --size=SIZE
-                Specify the size of the window
-  --fps=FPS     FPS limit, specify 0 for no limit
-
-Also, this example is just a very basic mockup of the final system.
-
-$
-```
